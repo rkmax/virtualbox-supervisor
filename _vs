@@ -1,0 +1,17 @@
+#!/bin/bash
+_vs()
+{
+    local cur prev commands
+    
+    COMPREPLY=()
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    commands="status list top"
+
+
+    COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+    return 0        
+}
+
+complete -F _vs vs
