@@ -55,6 +55,11 @@ function vm_runlist
     $VBOXCMD list runningvms
 }
 
+function vm_nonrunlist
+{
+    comm -3 <(vm_list | sort) <(vm_runlist | sort)
+}
+
 # Main functions
 function vm_statuses
 {
@@ -91,13 +96,14 @@ function vm_non_running
     do
         NAME=$(_ext_from "$VM" "NAME")
         printf "$OUTPUT_N_STR" $NAME
-    done < <(comm -3 <(vm_list | sort) <(vm_runlist | sort))    
+    done < <(vm_nonrunlist)    
 }
 
 function usage
 {
     local A=$'\e[33m'    
     local V=$'\e[32m'
+    local R=$'\e[31m'
     echo -e "
     ${V}[${A}V${V}]irtualbox [${A}S${V}]upervisor ${RST}
 
@@ -116,6 +122,16 @@ function usage
                                 y actualiza constantemente la pantalla
                                 por defecto actualiza cada tres (3) segundos
                                 pulse CTRL-C para salir.
+
+      start                     Inicia una maquina virtual que se encuentra
+                                detenida (apagada, pausada, suspendida)
+
+      stop                      Trata de detener una maquina virtual, usando el
+                                comando ${A}acpipowerbutton${RST} de virtualbox.
+
+      force_stop                apaga la maquina virtual por completo. es un apagado
+                                forzoso. 
+                                ${R}Nota${RST}: puede perder información si realiza este tipo de apagado
 "
 }
 
@@ -155,6 +171,37 @@ function status_loop
     done
 }
 
+function start_vm
+{
+    if [[ $# -eq 1 ]]; then
+        local cmd="startvm $1 --type headless"
+        $VBOXCMD ${cmd}
+    else
+        echo "Nada para iniciar"
+        exit 0
+    fi
+}
+
+function stop_vm
+{
+    if [[ $# -eq 1 ]]; then
+        local cmd="controlvm $1 acpipowerbutton"
+        $VBOXCMD ${cmd}
+    else
+        echo "Nada para detener"
+        exit 0
+    fi
+}
+function force_stop_vm
+{
+    if [[ $# -eq 1 ]]; then
+        local cmd="controlvm $1 poweroff"
+        $VBOXCMD ${cmd}
+    else
+        echo "Nada para detener"
+        exit 0
+    fi
+}
 # Start point
 
 
@@ -167,10 +214,28 @@ case $1 in
     list)
         vm_list
     ;;
+    non_run)
+        vm_nonrunlist
+    ;;
+    run)
+        vm_runlist
+    ;;
     status)
         vm_statuses
         vm_non_running
         echo
+    ;;
+    start)
+        shift
+        start_vm $@
+    ;;
+    stop)
+        shift
+        stop_vm $@
+    ;;
+    force_stop)
+        shift
+        force_stop_vm $@
     ;;
     top)
         status_loop

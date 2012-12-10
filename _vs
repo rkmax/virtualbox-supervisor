@@ -7,11 +7,29 @@ _vs()
 
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    commands="status list top"
+    commands="status start stop force_stop top"
 
+    if [ $COMP_CWORD == 1 ];then
+        COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+        return 0
+    fi
 
-    COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
-    return 0        
+    if [ $COMP_CWORD == 2 ];then
+        case "$prev" in
+            start)
+                local non_running_list=$(vs non_run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I  
+                COMPREPLY=( $(compgen -W "${non_running_list}" -- ${cur}) )
+                return 0              
+            ;;
+            force_stop|stop)                
+                local running_list=$(vs run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I  
+                COMPREPLY=( $(compgen -W "${running_list}" -- ${cur}) )
+                return 0              
+            ;;
+            *)
+            ;;
+        esac
+    fi
 }
 
 complete -F _vs vs
