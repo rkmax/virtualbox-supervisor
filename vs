@@ -140,6 +140,7 @@ function status_loop
     clear
 
     trap clean_loop SIGINT
+    trap clean_loop SIGTERM
 
     while :
     do
@@ -149,7 +150,7 @@ function status_loop
         vm_statuses
         read keypressed
 
-        printf "\n    Pulsa CTRL-C para salir."        
+        printf "\n    Pulsa \e[1;34mCTRL-C\e[m para salir"        
         wait
     done
 }
