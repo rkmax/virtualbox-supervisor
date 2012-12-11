@@ -22,10 +22,10 @@ function _ext_from
 {
     case $2 in
     "NAME")
-        echo $1 | awk '{print $1}' | sed 's/^"\(.*\)"$/\1/'        
+        echo $1 | awk '{print $1}' | sed 's/^"\(.*\)"$/\1/'
     ;;
     "UUID")
-        echo $1 | awk '{print $2}' | sed 's/^{\(.*\)}$/\1/'        
+        echo $1 | awk '{print $2}' | sed 's/^{\(.*\)}$/\1/'
     ;;
     *)
         echo "NONE"
@@ -42,7 +42,7 @@ function vm_cpu
 function vm_mem
 {
     PID=$1
-    ps -e -o pmem,pid | grep $PID | awk '{ print $1}'   
+    ps -e -o pmem,pid | grep $PID | awk '{ print $1}'
 }
 
 function vm_list
@@ -68,7 +68,7 @@ function vm_statuses
     local TCPU=0
 
     printf "$HEADER_STR" $FG "RUNNING VIRTUAL MACHINES" " CPU%" " MEM%"
-    
+
     while read VM
     do
         UUID=$(_ext_from "$VM" "UUID")
@@ -81,9 +81,9 @@ function vm_statuses
         TMEM=$(echo "$TMEM + $MEM" | bc)
         TCPU=$(echo "$TCPU + $CPU" | bc)
         printf "$OUTPUT_STR" $NAME $CPU $MEM
-        
+
     done < <(vm_runlist)
-    
+
     echo -n "    --------------------------------------------"
     printf "\n$OUTPUT_STR" "TOTAL" $TCPU $TMEM
 }
@@ -96,14 +96,16 @@ function vm_non_running
     do
         NAME=$(_ext_from "$VM" "NAME")
         printf "$OUTPUT_N_STR" $NAME
-    done < <(vm_nonrunlist)    
+    done < <(vm_nonrunlist)
 }
 
 function usage
 {
-    local A=$'\e[33m'    
+    local A=$'\e[33m'
     local V=$'\e[32m'
     local R=$'\e[31m'
+    local lR=$'\e[1;31m'
+    local uR=$'\e[4;31m'
     echo -e "
     ${V}[${A}V${V}]irtualbox [${A}S${V}]upervisor ${RST}
 
@@ -115,7 +117,7 @@ function usage
       status                    Muestra el estado de todas las maquinas
                                 virtuales del sistema, si la maquina esta
                                 en modo running, muestra el uso de memoria
-                                ram (MEM%) y cpu (CPU%) de cada maquina
+                                ram ${V}(MEM%)${RST} y cpu ${V}(CPU%)${RST} de cada maquina
                                 virtual.
 
       top                       Muestra el estado de las maquinas activas
@@ -130,8 +132,9 @@ function usage
                                 comando ${A}acpipowerbutton${RST} de virtualbox.
 
       force_stop                apaga la maquina virtual por completo. es un apagado
-                                forzoso. 
-                                ${R}Nota${RST}: puede perder información si realiza este tipo de apagado
+                                forzoso.
+                                ${uR}Nota${RST}: ${lR}puede perder información si realiza
+                                este tipo de apagado.${RST}
 "
 }
 
@@ -166,7 +169,7 @@ function status_loop
         vm_statuses
         read keypressed
 
-        printf "\n    Pulsa \e[1;34mCTRL-C\e[m para salir"        
+        printf "\n    Pulsa \e[1;34mCTRL-C\e[m para salir"
         wait
     done
 }
