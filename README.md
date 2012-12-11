@@ -7,7 +7,8 @@ controlar las maquinas virtuales y mirar sus estados.
 el comando incluye un autocompletar de cada una de las opciones abajo listadas.
 ver (archivo `_vs`).
 
-actualmente es un envoltorio para el comando `VBoxManage`
+actualmente es un envoltorio para el comando `VBoxManage` y se encuentra en un estado
+alpha cualquier sugerencia es bienvenida.
 
 ##comandos
 
