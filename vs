@@ -2,16 +2,24 @@
 
 # Conf
 VBOXCMD=VBoxManage
+
+# Colors
 RST=$'\e[m'
+A=$'\e[33m'
+V=$'\e[32m'
+R=$'\e[31m'
+lR=$'\e[1;31m'
+uR=$'\e[4;31m'
+
+# Header Strings
 OUTPUT_STR="    %-30s %6.2f %6.2f${RST}\n"
 OUTPUT_N_STR="    %-30s ${RST}\n"
 HEADER_STR="\n    %s%-30s %6s %6s${RST}\n\n"
 
-
+#fix bc command convert
 export LC_NUMERIC="en_US.UTF-8"
 
 # Helpers
-
 function vm_pid
 {
     UUID=$1
@@ -99,19 +107,26 @@ function vm_non_running
     done < <(vm_nonrunlist)
 }
 
-function usage
+function title
 {
-    local A=$'\e[33m'
-    local V=$'\e[32m'
-    local R=$'\e[31m'
-    local lR=$'\e[1;31m'
-    local uR=$'\e[4;31m'
     echo -e "
     ${V}[${A}V${V}]irtualbox [${A}S${V}]upervisor ${RST}
 
     Es una utilidad que ayuda a la administracion de las maquinas virtuales
-    hechas con Virtualbox.
+    hechas con Virtualbox."
+}
 
+function check_vboxcmd
+{
+    type $VBOXCMD >/dev/null 2>&1 || {
+        echo -e "\n    ${uR}${VBOXCMD}${RST}${R} no esta instalado, o no se encuentra en la variable PATH.${RST}\n"
+        exit 1
+    }
+}
+
+function usage
+{
+    echo -e "
     Modo de uso de $(basename "$0"):
 
       status                    Muestra el estado de todas las maquinas
@@ -206,7 +221,8 @@ function force_stop_vm
     fi
 }
 # Start point
-
+title
+check_vboxcmd
 
 if [[ $# -eq 0 ]];then
     usage
@@ -214,6 +230,7 @@ if [[ $# -eq 0 ]];then
 fi
 
 case $1 in
+    # Private options
     list)
         vm_list
     ;;
@@ -223,6 +240,7 @@ case $1 in
     run)
         vm_runlist
     ;;
+    #Public options / autocomplete
     status)
         vm_statuses
         vm_non_running
