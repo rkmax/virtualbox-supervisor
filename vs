@@ -2,6 +2,7 @@
 
 # Conf
 VBOXCMD=VBoxManage
+TIMEOUT=3s
 
 # Colors
 RST=$'\e[m'
@@ -169,6 +170,12 @@ function status_loop
 
     local keypressed
 
+    if [ $# -eq 1 ];then
+        local timeout=$1
+    else
+        local timeout=$TIMEOUT
+    fi
+
     tput smcup
     tput civis
     clear
@@ -178,9 +185,9 @@ function status_loop
 
     while :
     do
-        sleep 3s &
+        sleep $timeout &
         tput cup 0 0
-        date
+        echo -e "$(date) timeout : $timeout"
         vm_statuses
         read keypressed
 
@@ -259,6 +266,7 @@ case $1 in
         force_stop_vm $@
     ;;
     top)
+        shift
         status_loop
     ;;
     *)
