@@ -267,7 +267,7 @@ case $1 in
     ;;
     top)
         shift
-        status_loop
+        status_loop $1
     ;;
     *)
         usage
