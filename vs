@@ -120,6 +120,7 @@ function title
 function check_vboxcmd
 {
     type $VBOXCMD >/dev/null 2>&1 || {
+        title
         echo -e "\n    ${uR}${VBOXCMD}${RST}${R} no esta instalado, o no se encuentra en la variable PATH.${RST}\n"
         exit 1
     }
@@ -127,6 +128,7 @@ function check_vboxcmd
 
 function usage
 {
+    title
     echo -e "
     Modo de uso de $(basename "$0"):
 
@@ -228,7 +230,6 @@ function force_stop_vm
     fi
 }
 # Start point
-title
 check_vboxcmd
 
 if [[ $# -eq 0 ]];then
