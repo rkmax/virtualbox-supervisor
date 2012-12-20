@@ -2,7 +2,7 @@
 _vs()
 {
     local cur prev commands
-    
+
     COMPREPLY=()
 
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -17,14 +17,19 @@ _vs()
     if [ $COMP_CWORD == 2 ];then
         case "$prev" in
             start)
-                local non_running_list=$(vs non_run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I  
+                local non_running_list=$(vs non_run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I
                 COMPREPLY=( $(compgen -W "${non_running_list}" -- ${cur}) )
-                return 0              
+                return 0
             ;;
-            force_stop|stop)                
-                local running_list=$(vs run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I  
+            up)
+                local vagrant=$(vs vagrant | tr '\n' ' ')
+                COMPREPLY=( $(compgen -W "${vagrant}" -- ${cur}) )
+                return 0
+            ;;
+            force_stop|stop)
+                local running_list=$(vs run | cut -d ' ' -f1 | tr '\n' ' ' | tr -d '"')I
                 COMPREPLY=( $(compgen -W "${running_list}" -- ${cur}) )
-                return 0              
+                return 0
             ;;
             *)
             ;;

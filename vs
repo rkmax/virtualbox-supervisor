@@ -64,6 +64,29 @@ function vm_runlist
     $VBOXCMD list runningvms
 }
 
+function vagrant_list
+{
+    for vg in $(find $HOME -maxdepth 2 -type f -name Vagrantfile)
+    do
+        echo $(basename $(dirname ${vg}))
+    done
+}
+
+function vagrant_up
+{
+    vg="${HOME}/${1}"
+    dir="${PDW}"
+
+    if [[ ! -d $vg ]]; then
+        echo -e "\n    ${lR}La maquina${RST} [${R}${1}${RST}]${lR} no puede inicializarse. el directorio no existe${RST}\n"
+        exit 1
+    fi
+
+    cd $vg &> /dev/null
+    vagrant up
+    cd $dir
+}
+
 function vm_nonrunlist
 {
     comm -3 <(vm_list | sort) <(vm_runlist | sort)
@@ -242,6 +265,9 @@ case $1 in
     list)
         vm_list
     ;;
+    vagrant)
+        vagrant_list
+    ;;
     non_run)
         vm_nonrunlist
     ;;
@@ -249,6 +275,10 @@ case $1 in
         vm_runlist
     ;;
     #Public options / autocomplete
+    up)
+        shift
+        vagrant_up $@
+    ;;
     status)
         vm_statuses
         vm_non_running
