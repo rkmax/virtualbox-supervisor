@@ -176,6 +176,12 @@ function usage
                                 forzoso.
                                 ${uR}Nota${RST}: ${lR}puede perder información si realiza
                                 este tipo de apagado.${RST}
+
+      up                        Inicia una maquina virtual a traves del
+                                comando$ [${V}vagran up${RST}].
+                                ${uR}Nota${RST}: el comando up busca las maquinas existentes
+                                en el directorio ${A}\$HOME${RST}
+
 "
 }
 
